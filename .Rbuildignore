@@ -1,2 +1,5 @@
 ^ggdnog\.Rproj$
 ^\.Rproj\.user$
+^LICENSE\.md$
+^data-raw$
+^cran-comments\.md$

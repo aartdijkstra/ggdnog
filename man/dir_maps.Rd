@@ -14,5 +14,5 @@ This function scans the directory tree relative from the working directory to fi
 Note that it searches for specific keywords unique to GGD NOG, so running it outside this environment will yield unexpected results.
 }
 \examples{
-st_read(paste0(dir_maps(), "/PC4.shp"))
+paste0(dir_maps(), "/PC4.shp")
 }

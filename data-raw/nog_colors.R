@@ -1,7 +1,7 @@
 library(tidyverse)
 
 # kleurenpatroon met NOG huisstijl
-nog_colors = c("#1D1756", "#D1005D", "#2F6594", "#D3DFF1", "#FFBDDB")
+nog_colors = c("#1D1756", "#D1005D", "#628dcf", "#cdd344", "#685c8c", "#e9748f", "#b4c4e7", "#eae9a5", "#b2aac4", "#f9bbc6", "#eff4fa")
 use_data(nog_colors)
 nog_palette = c("#FAE6EF","#F6CCDF","#ED99BE","#E3669E","#D1005D")
 use_data(nog_palette)

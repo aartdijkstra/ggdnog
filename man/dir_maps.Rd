@@ -4,15 +4,18 @@
 \alias{dir_maps}
 \title{Find directory with map data}
 \usage{
-dir_maps()
+dir_maps(suffix = "")
+}
+\arguments{
+\item{suffix}{Desired suffix to place after the directory. This is usually the filename of a specific gpkg- or shapefile, e.g. "PC4.shp".}
 }
 \value{
-The directory containing the shapefiles, or NA if not found.
+The directory containing the shapefiles, with the desired suffix, or NA if not found.
 }
 \description{
 This function scans the directory tree relative from the working directory to find a specific directory in Sharepoint.
 Note that it searches for specific keywords unique to GGD NOG, so running it outside this environment will yield unexpected results.
 }
 \examples{
-paste0(dir_maps(), "/PC4.shp")
+dir_maps("PC4.shp")
 }

@@ -30,6 +30,8 @@ describe = function (data, group=NULL) {
       return(ret)
     } else if (is.list(data) || is.vector(data)) {
       return(describeVar(data))
+    } else {
+      return(describeVar(data))
     }
   } else {
     if (is.data.frame(data)) {

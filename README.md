@@ -27,6 +27,12 @@ Some basic helpers are:
 ``` r
 library(ggdnog)
 
-printf("This allows for easy printing of numbers (%d, %.1f) and other types (%s).", 5, 0.24, "like this string")
+printf("This allows for easy printing of numbers (%d, %.1f) and other types (%s).",
+       5, 0.24, "like this string")
+       
+data = data.frame(weight = rnorm(100, mean=70, sd=15),
+                  gender = c(rep("male", 50), rep("female", 50)))
+describe(data, "gender")
+describe(data$weight, data$gender)
 ```
 

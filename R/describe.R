@@ -67,7 +67,24 @@ describe = function (data, group=NULL) {
         }
       }
       return(ret)
-    } else if (is.list(data) || is.vector(data)) {
+    } else if (is.factor(data) || is.character(data)) {
+      # if the first variable is a factor or character, then the result of describeVar() is a list of frequencies
+      # combining several of these lists becomes unreadable, so we need to split them up
+
+      # group must be a list of equal size
+      if (!is.list(group) && !is.vector(group) && !is.factor(group))
+        stop("The supplied grouping variable must be a list, vector or factor.")
+      if (length(group) != length(data))
+        stop("The size of the second argument does not match the size of the first.")
+
+      # return value is a list of lists of data frames, one list per group, and then inside that list one list per variable
+      ret = list()
+      groups = sort(unique(group))
+      for (g in groups) {
+        ret[[g]] = describeVar(data[which(group == g)])
+      }
+      return(ret)
+    } else {
       # group must be a list of equal size
       if (!is.list(group) && !is.vector(group) && !is.factor(group))
         stop("The supplied grouping variable must be a list, vector or factor.")
@@ -90,13 +107,33 @@ describe = function (data, group=NULL) {
 # shorthand function to eliminate long labels
 # row names would be difficult to read otherwise
 trunc_str = function (labels) {
+  if (!is.character(labels)) return(labels)
   ret = labels
   ret[which(nchar(labels) > 25)] = paste0(substr(labels[which(nchar(labels) > 25)], 1, 22), "...")
   return(ret)
 }
 
 describeVar = function (data, rowname=NULL) {
+  if (length(data) == 0) {
+    return("Empty variable")
+  }
+
+  if (is.list(data))
+    data = unlist(data)
+
   if (is.numeric(data) || is.double(data) || is.Date(data)) {
+    if (all(is.na(data))) {
+      return(data.frame(n=sum(!is.na(data)),
+                        mean=NA,
+                        sd=NA,
+                        median=NA,
+                        min=NA,
+                        max=NA,
+                        q25=NA,
+                        q75=NA,
+                        missing=sum(is.na(data)),
+                        row.names=rowname))
+    }
     return(data.frame(n=sum(!is.na(data)),
                       mean=mean(data, na.rm=T),
                       sd=stats::sd(data, na.rm=T),
@@ -110,17 +147,20 @@ describeVar = function (data, rowname=NULL) {
   } else if (is.character(data) || is.factor(data) || is.logical(data)) {
     unique_values = sort(unique(data[which(!is.na(data))]))
     if (length(unique_values) > 15) {
-      counts = sort(table(data))
+      counts = sort(table(data), decreasing=T)
       ret = matrix(nrow=19, ncol=2)
       rownames(ret) = c("Unique values", "n", "Missing", "---", trunc_str(names(counts)[1:14]), "... list truncated")
       colnames(ret) = c("n", "%")
       ret[1,] = c(length(unique_values), NA)
       ret[2,] = c(sum(!is.na(data)), sum(!is.na(data))/length(data)*100)
       ret[3,] = c(sum(is.na(data)), sum(is.na(data))/length(data)*100)
-      ret[5:23,1] = counts[1:14]
-      ret[5:23,2] = prop.table(counts[1:14])*100
-      ret[24,1] = sum(counts[15:length(counts)])
-      ret[24,2] = sum(prop.table(counts)[15:length(counts)]*100)
+      if (all(is.na(data))) {
+        return(ret[1:3,])
+      }
+      ret[5:18,1] = counts[1:14]
+      ret[5:18,2] = prop.table(counts)[1:14]*100
+      ret[19,1] = sum(counts[15:length(counts)])
+      ret[19,2] = sum(prop.table(counts)[15:length(counts)]*100)
       return(ret)
     } else {
       ret = matrix(nrow=length(unique_values)+4, ncol=2)
@@ -129,6 +169,9 @@ describeVar = function (data, rowname=NULL) {
       ret[1,] = c(length(unique_values), NA)
       ret[2,] = c(sum(!is.na(data)), sum(!is.na(data))/length(data)*100)
       ret[3,] = c(sum(is.na(data)), sum(is.na(data))/length(data)*100)
+      if (all(is.na(data))) {
+        return(ret[1:3,])
+      }
       counts = table(data)
       if (length(counts) != 0) {
         ret[5:(4+length(unique_values)),1] = counts

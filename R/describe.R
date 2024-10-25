@@ -163,8 +163,9 @@ describeVar = function (data, rowname=NULL) {
       ret[19,2] = sum(prop.table(counts)[15:length(counts)]*100)
       return(ret)
     } else {
+      counts = table(data)
       ret = matrix(nrow=length(unique_values)+4, ncol=2)
-      rownames(ret) = c("Unique values", "n", "Missing", "---", trunc_str(unique_values))
+      rownames(ret) = c("Unique values", "n", "Missing", "---", trunc_str(names(counts)))
       colnames(ret) = c("n", "%")
       ret[1,] = c(length(unique_values), NA)
       ret[2,] = c(sum(!is.na(data)), sum(!is.na(data))/length(data)*100)
@@ -172,7 +173,6 @@ describeVar = function (data, rowname=NULL) {
       if (all(is.na(data))) {
         return(ret[1:3,])
       }
-      counts = table(data)
       if (length(counts) != 0) {
         ret[5:(4+length(unique_values)),1] = counts
         ret[5:(4+length(unique_values)),2] = prop.table(counts)*100

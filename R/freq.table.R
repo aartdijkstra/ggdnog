@@ -101,9 +101,10 @@ freq.table = function (..., is.list=F, is.table=F, row.prop=T, col.prop=T, num.f
   ret[seq(from=2,to=nrow(ret)-1,by=2),ncol(ret)] = sprintf(paste0("%", num.fmt, "%%"), proportions(totals.row)*100)
   colnames(ret)[ncol(ret)] = "Totaal"
 
-  test = suppressWarnings(stats::chisq.test(result))
-
-  ret[nrow(ret),ncol(ret)] = sprintf("p = %0.3e", test$p.value)
+  tryCatch({
+    test = suppressWarnings(stats::chisq.test(result))
+    ret[nrow(ret),ncol(ret)] = sprintf("p = %0.3e", test$p.value)
+  }, error=function(e) { ret[nrow(ret),ncol(ret)] = "p = N/A" })
 
   return(ret)
 }
